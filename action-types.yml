@@ -1,0 +1,17 @@
+inputs:
+  port:
+    type: integer
+  block-time:
+    type: integer
+  hardfork:
+    type: string
+  fork-url:
+    type: string
+  fork-block-number:
+    type: string
+  chain-id:
+    type: integer
+  gas-limit:
+    type: integer
+  gas-price:
+    type: integer

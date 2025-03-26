@@ -1,0 +1,27 @@
+name: Run Tests with Anvil
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start Anvil
+        uses: ./
+        with:
+          anvil-port: "8545"
+          block-time: "1"
+          hardfork: "berlin"
+          fork-url:
+          fork-block-number:
+          chain-id: "134"
+          gas-limit: "6700000"
+          gas-price: "0"
+
+      - name: Run tests
+        run: |
+          npm install
+          npm test

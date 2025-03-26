@@ -1,0 +1,47 @@
+name: "anvil-github-action"
+description: "Starts an Anvil instance for blockchain testing"
+inputs:
+  port:
+    description: "Port on which Anvil will run"
+    required: false
+    default: 8545
+  block-time:
+    description: "Block time (in seconds)"
+    required: false
+    default: 1
+  hardfork:
+    description: "Ethereum hardfork to use"
+    required: false
+    default: "berlin"
+  fork-url:
+    description: "Optional fork URL"
+    required: false
+    default: ""
+  fork-block-number:
+    description: "Optional fork block number"
+    required: false
+    default: ""
+  chain-id:
+    description: "Chain ID"
+    required: false
+    default: 134
+  gas-limit:
+    description: "Gas limit"
+    required: false
+    default: 6700000
+  gas-price:
+    description: "Gas price"
+    required: false
+    default: 0
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.anvil-port }}
+    - ${{ inputs.block-time }}
+    - ${{ inputs.hardfork }}
+    - ${{ inputs.fork-url }}
+    - ${{ inputs.fork-block-number }}
+    - ${{ inputs.chain-id }}
+    - ${{ inputs.gas-limit }}
+    - ${{ inputs.gas-price }}
