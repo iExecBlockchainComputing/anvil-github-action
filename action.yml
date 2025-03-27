@@ -34,14 +34,45 @@ inputs:
     required: false
     default: 0
 runs:
-  using: "docker"
-  image: "Dockerfile"
-  args:
-    - ${{ inputs.anvil-port }}
-    - ${{ inputs.block-time }}
-    - ${{ inputs.hardfork }}
-    - ${{ inputs.fork-url }}
-    - ${{ inputs.fork-block-number }}
-    - ${{ inputs.chain-id }}
-    - ${{ inputs.gas-limit }}
-    - ${{ inputs.gas-price }}
+  using: "composite"
+  steps:
+    - name: Install Foundry
+      uses: foundry-rs/foundry-toolchain@v1
+
+    - name: Update PATH for Foundry
+      run: echo "${HOME}/.foundry/bin" >> $GITHUB_PATH
+
+    - name: Check anvil installation
+      run: |
+        echo "Anvil located at: $(which anvil)"
+        anvil --version
+
+    - name: Install netcat
+      run: |
+        apt update && sudo apt install -y netcat
+
+    - name: Start Anvil
+      run: |
+        if [ -z "${{ inputs.fork-url }}" ]; then
+          FORK_URL=""
+        else
+          FORK_URL="--fork-url ${{ inputs.fork-url }}"
+        fi
+        nohup anvil --host 0.0.0.0 --port ${{ inputs.port }} --hardfork ${{ inputs.hardfork }} $FORK_URL --chain-id ${{ inputs.chain-id }} --gas-limit ${{ inputs.gas-limit }} --gas-price ${{ inputs.gas-price }} > anvil.log 2>&1 &
+        sleep 3
+
+    - name: Wait for Anvil to start
+      run: |
+        timeout=30
+        interval=1
+        echo "Waiting for Anvil to start..."
+        for ((i=0; i<timeout; i++)); do
+          if nc -z localhost ${{ inputs.port }}; then
+             echo "Anvil is operational."
+             exit 0
+          fi
+          echo "Attempt $((i+1)) of $timeout: Anvil is not ready, waiting ${interval}s..."
+          sleep $interval
+        done
+        echo "Error: Anvil did not start within the timeout period."
+        exit 1
