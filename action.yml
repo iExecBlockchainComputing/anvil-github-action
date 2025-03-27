@@ -41,15 +41,18 @@ runs:
 
     - name: Update PATH for Foundry
       run: echo "${HOME}/.foundry/bin" >> $GITHUB_PATH
+      shell: bash
 
     - name: Check anvil installation
       run: |
         echo "Anvil located at: $(which anvil)"
         anvil --version
+      shell: bash
 
     - name: Install netcat
       run: |
         apt update && sudo apt install -y netcat
+      shell: bash
 
     - name: Start Anvil
       run: |
@@ -60,6 +63,7 @@ runs:
         fi
         nohup anvil --host 0.0.0.0 --port ${{ inputs.port }} --hardfork ${{ inputs.hardfork }} $FORK_URL --chain-id ${{ inputs.chain-id }} --gas-limit ${{ inputs.gas-limit }} --gas-price ${{ inputs.gas-price }} > anvil.log 2>&1 &
         sleep 3
+      shell: bash
 
     - name: Wait for Anvil to start
       run: |
@@ -76,3 +80,4 @@ runs:
         done
         echo "Error: Anvil did not start within the timeout period."
         exit 1
+      shell: bash
