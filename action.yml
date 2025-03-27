@@ -49,11 +49,6 @@ runs:
         anvil --version
       shell: bash
 
-    - name: Install netcat
-      run: |
-        apt update && sudo apt install -y netcat
-      shell: bash
-
     - name: Start Anvil
       run: |
         if [ -z "${{ inputs.fork-url }}" ]; then
@@ -63,21 +58,4 @@ runs:
         fi
         nohup anvil --host 0.0.0.0 --port ${{ inputs.port }} --hardfork ${{ inputs.hardfork }} $FORK_URL --chain-id ${{ inputs.chain-id }} --gas-limit ${{ inputs.gas-limit }} --gas-price ${{ inputs.gas-price }} > anvil.log 2>&1 &
         sleep 3
-      shell: bash
-
-    - name: Wait for Anvil to start
-      run: |
-        timeout=30
-        interval=1
-        echo "Waiting for Anvil to start..."
-        for ((i=0; i<timeout; i++)); do
-          if nc -z localhost ${{ inputs.port }}; then
-             echo "Anvil is operational."
-             exit 0
-          fi
-          echo "Attempt $((i+1)) of $timeout: Anvil is not ready, waiting ${interval}s..."
-          sleep $interval
-        done
-        echo "Error: Anvil did not start within the timeout period."
-        exit 1
       shell: bash
